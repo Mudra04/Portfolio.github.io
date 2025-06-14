@@ -1,0 +1,546 @@
+<![CDATA[
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mudra Berde - Data Science Portfolio</title>
+  <style>
+    /* Google Font Import */
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
+
+    /* CSS Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: black;
+      overflow-x: hidden;
+      font-family: 'Outfit', sans-serif;
+      color: #d0d7f1;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+      user-select: none;
+    }
+
+    #starfield-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      background: black;
+      display: block;
+      pointer-events: none;
+    }
+
+    #root {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      background-color: rgba(0,0,0,0.75);
+      backdrop-filter: saturate(160%) blur(10px);
+      display: flex;
+      flex-direction: column;
+      padding: 0 24px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(0, 10, 26, 0.85);
+      backdrop-filter: saturate(200%) blur(8px);
+      border-bottom: 1px solid #123a66;
+      box-shadow: 0 2px 15px #00244dbb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      z-index: 11;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #88bbff;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      user-select: none;
+      cursor: default;
+      text-shadow: 0 0 8px #88bbffaa;
+    }
+
+    nav {
+      display: flex;
+      gap: 28px;
+    }
+
+    a.nav-link {
+      color: #a0c0ff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 8px 16px;
+      border-radius: 12px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      box-shadow: 0 0 2px #5599ff44;
+    }
+
+    a.nav-link:hover,
+    a.nav-link:focus-visible {
+      background: #1f4db0cc;
+      color: #d0e0ff;
+      outline: none;
+      box-shadow: 0 0 12px #77aaffcc;
+    }
+
+    a.nav-link:focus-visible {
+      box-shadow: 0 0 18px #99bbffcc;
+    }
+
+    main {
+      margin-top: 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 96px;
+      z-index: 11;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-weight: 900;
+      color: #a3bdff;
+      text-shadow:
+        0 0 12px #7bacffcf,
+        0 0 24px #4c80ffcc;
+    }
+
+    .hero {
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      margin-bottom: .25rem;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      color: #b0c0e5cc;
+      margin-bottom: 40px;
+      font-weight: 600;
+      user-select: text;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, #3e78fc, #00499c);
+      color: white;
+      font-weight: 700;
+      padding: 18px 48px;
+      font-size: 1.15rem;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      box-shadow: 0 10px 26px rgba(0, 75, 200, 0.85);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s;
+      user-select: none;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      border-bottom: 3px solid #0a377e;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0, 110, 255, 0.95);
+      outline: none;
+      border-bottom-color: #59a0ff;
+    }
+
+    section {
+      user-select: text;
+    }
+
+    section h2 {
+      text-align: center;
+      font-size: 3.25rem;
+      margin-bottom: 1rem;
+    }
+
+    section p.lead {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 40px;
+      font-size: 1.2rem;
+      color: #9ab2ffcc;
+      font-weight: 600;
+    }
+
+    .about-content {
+      max-width: 750px;
+      margin: 0 auto;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      background: rgba(15, 25, 48, 0.75);
+      padding: 36px 48px;
+      border-radius: 16px;
+      box-shadow:
+        0 0 40px #477efbbb inset;
+      font-weight: 500;
+      color: #bcc8f3dd;
+      text-shadow: 0 0 4px #395eaa70;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .projects-grid {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 36px;
+      padding: 0 16px;
+    }
+
+    .project-card {
+      background: rgba(10, 20, 40, 0.85);
+      border-radius: 20px;
+      box-shadow:
+        0 0 34px #3e6affbb,
+        inset 0 0 34px #2246bbcc;
+      padding: 40px 36px 46px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      cursor: pointer;
+    }
+
+    .project-card:hover,
+    .project-card:focus-within {
+      transform: translateY(-12px) scale(1.04);
+      box-shadow:
+        0 0 60px #557fffdd,
+        inset 0 0 42px #2a4eccff;
+      outline: none;
+    }
+    .project-card:focus-within {
+      outline: 3px solid #7fb2ffaa;
+      outline-offset: 6px;
+    }
+
+    .project-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.7rem;
+      color: #94baff;
+      font-weight: 900;
+      text-shadow: 0 0 8px #7bb0ffcc;
+      user-select: none;
+    }
+
+    .project-description {
+      flex-grow: 1;
+      font-size: 1.05rem;
+      margin-bottom: 2rem;
+      color: #aec0f8cc;
+      line-height: 1.6;
+      font-weight: 500;
+      user-select: text;
+    }
+
+    .project-link {
+      align-self: flex-start;
+      color: #aad0ffcc;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.25s ease;
+    }
+
+    .project-link:hover,
+    .project-link:focus-visible {
+      border-color: #d0e2ffcc;
+      outline: none;
+      text-shadow: 0 0 8px #b1cdffcc;
+    }
+
+    .contact-group {
+      max-width: 540px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      font-weight: 500;
+      font-size: 1rem;
+      user-select: text;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #a8b9ffcc;
+      text-shadow: 0 0 6px #557cfac8;
+      letter-spacing: 0.04em;
+      user-select: text;
+    }
+
+    input, textarea {
+      background: rgba(14, 20, 42, 0.97);
+      border: 2.5px solid #5577ffaa;
+      border-radius: 18px;
+      color: #cedeff;
+      font-size: 1.1rem;
+      padding: 16px 20px;
+      resize: vertical;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Outfit', sans-serif;
+      box-shadow: inset 0 0 14px #4976ff88;
+      letter-spacing: 0.015em;
+      min-height: 44px;
+      outline-offset: 3px;
+      user-select: text;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #7a9dffdd;
+      box-shadow: 0 0 18px #76a4ffdd;
+      outline: none;
+      background: rgba(20, 30, 60, 0.96);
+    }
+
+    textarea {
+      min-height: 140px;
+      line-height: 1.5;
+    }
+
+    .btn-submit {
+      background: linear-gradient(90deg, #0950ee, #004bbb);
+      color: white;
+      border: none;
+      font-weight: 900;
+      padding: 22px 54px;
+      font-size: 1.25rem;
+      border-radius: 26px;
+      cursor: pointer;
+      box-shadow: 0 6px 22px #004accbb;
+      user-select: none;
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      align-self: center;
+      width: fit-content;
+      min-width: 180px;
+    }
+
+    .btn-submit:hover,
+    .btn-submit:focus-visible {
+      transform: translateY(-6px);
+      box-shadow: 0 18px 48px #005dfff2;
+      outline: none;
+    }
+
+    .btn-resume-container {
+      text-align: center;
+      margin: 0 0 60px;
+      z-index: 12;
+    }
+    .btn-resume {
+      background: linear-gradient(90deg, #3e6aff, #004bbb);
+      color: white;
+      font-weight: 700;
+      padding: 16px 44px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 28px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 91, 205, 0.9);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s;
+      user-select: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-resume:hover,
+    .btn-resume:focus-visible {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 38px rgba(0, 110, 255, 0.95);
+      outline: none;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        gap: 64px;
+      }
+      .hero h1 {
+        font-size: 3rem;
+      }
+      section {
+        padding: 60px 16px 80px;
+      }
+      .projects-grid {
+        gap: 28px;
+        padding: 0;
+      }
+      .about-content {
+        padding: 28px;
+      }
+      .btn-primary {
+        padding: 18px 36px;
+        font-size: 1.1rem;
+      }
+      label {
+        font-size: 1.05rem;
+      }
+      input, textarea {
+        font-size: 1rem;
+        padding: 14px 18px;
+      }
+      .btn-submit {
+        font-size: 1.1rem;
+        padding: 18px 40px;
+      }
+      .btn-resume {
+        padding: 14px 32px;
+        font-size: 1.05rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starfield-canvas" aria-hidden="true"></canvas>
+  <div id="root">
+    <header role="banner">
+      <a href="#" class="logo" aria-label="Mudra Berde Portfolio Logo">Mudra Berde</a>
+      <nav role="navigation" aria-label="Main Navigation">
+        <a href="#about" class="nav-link">About</a>
+        <a href="#projects" class="nav-link">Projects</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" role="region" aria-label="Introduction">
+        <h1>Mudra Berde</h1>
+        <p>3rd Year Data Science Engineering Student at Usha Mittal Institute of Technology, Juhu, Mumbai</p>
+        <p>Experience with Python, Power BI, and Data Management. Passionately learning new skills.</p>
+        <div class="btn-resume-container">
+          <a href="resume.pdf" download="Mudra_Berde_Resume.pdf" class="btn-resume" aria-label="Download resume">Download My Resume</a>
+        </div>
+        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" aria-label="Scroll to contact form">Get in Touch</button>
+      </section>
+
+      <section id="about" role="region" aria-label="About Me">
+        <h2>About Me</h2>
+        <p class="lead">I am a passionate data science engineering student with hands-on experience in Python programming, Power BI for data visualization, and effective data management techniques. Currently, I am expanding my skill set and love exploring new data technologies.</p>
+        <div class="about-content">
+          <p>My academic journey at Usha Mittal Institute of Technology, Juhu, Mumbai has enhanced my analytical and problem-solving abilities. I have applied these skills in real-world projects like building an Amazon Sales Dashboard using Power BI integrated with Visual Studio tools, demonstrating my ability to turn raw data into actionable insights.</p>
+        </div>
+      </section>
+
+      <section id="projects" role="region" aria-label="Projects">
+        <h2>Projects</h2>
+        <p class="lead">Here is a highlighted project showcasing my practical application of data science and BI skills.</p>
+        <div class="projects-grid">
+          <article class="project-card" tabindex="0" aria-labelledby="proj1-title">
+            <h3 class="project-title" id="proj1-title">Amazon Sales Dashboard</h3>
+            <p class="project-description">Developed a comprehensive sales dashboard for Amazon sales data using Power BI with Visual Studio integration. This dashboard provides dynamic insights and visual analytics to optimize sales strategies.</p>
+            <a href="https://github.com/yourusername/amazon-sales-dashboard" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View Amazon Sales Dashboard on GitHub">View on GitHub</a>
+          </article>
+        </div>
+      </section>
+
+      <section id="contact" role="region" aria-label="Contact Me">
+        <h2>Contact Me</h2>
+        <p class="lead">I'd love to hear from you! Whether you want to collaborate, ask questions, or discuss new ideas, feel free to reach out.</p>
+        <form class="contact-group" action="https://formsubmit.co/www.mudraberde7020@gmail.com" method="POST" target="_blank" aria-label="Contact form">
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_next" value="https://yourdomain.com/thank-you" />
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" required autocomplete="name" placeholder="Your full name" />
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required autocomplete="email" placeholder="your.email@example.com" />
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required placeholder="Your message here..."></textarea>
+          <button type="submit" class="btn-submit">Send Message</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+<script>
+  const canvas = document.getElementById('starfield-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let width, height;
+  const starCount = 150;
+
+  class Star {
+    constructor() {
+      this.reset();
+      this.twinkleDirection = Math.random() > 0.5 ? 1 : -1;
+    }
+    reset() {
+      this.x = Math.random() * width;
+      this.y = Math.random() * height;
+      this.size = Math.random() * 1.3 + 0.5;
+      this.speed = this.size * 0.15 + 0.03;
+      this.opacity = Math.random() * 0.8 + 0.2;
+    }
+    update() {
+      this.x -= this.speed;
+      if (this.x < 0) this.x = width;
+      this.opacity += 0.01 * this.twinkleDirection;
+      if (this.opacity >= 1) this.twinkleDirection = -1;
+      else if (this.opacity <= 0.3) this.twinkleDirection = 1;
+    }
+    draw() {
+      const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 6);
+      gradient.addColorStop(0, `rgba(255, 255, 255, ${this.opacity})`);
+      gradient.addColorStop(0.5, `rgba(170, 200, 255, ${this.opacity * 0.6})`);
+      gradient.addColorStop(1, 'rgba(170, 200, 255, 0)');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size * 6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function setup() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    stars = [];
+    for(let i=0; i < starCount; i++){
+      stars.push(new Star());
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    stars.forEach(star => {
+      star.update();
+      star.draw();
+    });
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', () => {
+    setup();
+  });
+
+  setup();
+  animate();
+</script>
+</body>
+</html>
+]]>
